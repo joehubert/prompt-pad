@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+lib/
+lib64/
+bin/
+include/
+share/
+
+# Distribution and packaging
+.egg/
+.egg-info/
+dist/
+build/
+eggs/
+*.egg
+*.whl
+
+# Development
+.project
+.settings
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment variables
+.env
+.flaskenv
