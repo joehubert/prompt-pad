@@ -7,7 +7,7 @@ import os
 import httpx
 from openai import OpenAI
 
-from prompt_pad.config import CF_ACCOUNT, PROVIDERS
+from prompt_pad.config import PROVIDERS
 
 
 def is_provider_configured(provider_name: str) -> bool:
@@ -40,6 +40,10 @@ def get_client(provider_name: str) -> OpenAI:
     key = os.getenv(cfg["key_env"])
     if not key:
         raise RuntimeError(f"{cfg['key_env']} not set in environment or .env")
-    if provider_name == "Cloudflare Workers AI" and not CF_ACCOUNT:
-        raise RuntimeError("CLOUDFLARE_ACCOUNT_ID not set in environment or .env")
-    return OpenAI(base_url=cfg["base_url"], api_key=key, timeout=60.0)
+    base_url = cfg["base_url"]
+    if provider_name == "Cloudflare Workers AI":
+        account = os.getenv("CLOUDFLARE_ACCOUNT_ID", "")
+        if not account:
+            raise RuntimeError("CLOUDFLARE_ACCOUNT_ID not set in environment or .env")
+        base_url = f"https://api.cloudflare.com/client/v4/accounts/{account}/ai/v1"
+    return OpenAI(base_url=base_url, api_key=key, timeout=60.0)

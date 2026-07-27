@@ -1,6 +1,6 @@
 # Prompt Pad
 
-A single-page Streamlit app for chatting against seven free-tier LLM providers through their OpenAI-compatible endpoints, with response timing and token stats.
+A Streamlit app for chatting against seven free-tier LLM providers through their OpenAI-compatible endpoints, with response timing, token stats, and a configuration page.
 
 Supported providers: **Groq, OpenRouter, Cloudflare Workers AI, GitHub Models, NVIDIA NIM, Mistral, Cohere**. You only need API keys for the ones you actually want to use — the sidebar greys out anything unconfigured.
 
@@ -47,6 +47,7 @@ Supported providers: **Groq, OpenRouter, Cloudflare Workers AI, GitHub Models, N
 - **Provider / Model** — pick a provider in the sidebar, then a model. Providers without a configured key are shown greyed out. For OpenRouter, click **Refresh free models** to pull the current list of `:free` models from OpenRouter's public catalog.
 - **Custom model ID** — type an ID into the override box to use a model not in the preset list.
 - **Temperature / Max tokens / System prompt** — adjust generation settings per request.
+- **Configuration page** — persist provider credentials and the default temperature, max tokens, and system prompt to `.env`. Inference-page controls remain session-only.
 - **Stream responses** — toggle streaming vs. waiting for the full response.
 - **Chat** — type in the input box at the bottom to start a conversation. Each assistant reply shows timing (total time, time to first token, tokens/sec) below the message.
 - **Clear conversation** — resets the chat history and stats.
@@ -56,6 +57,9 @@ Supported providers: **Groq, OpenRouter, Cloudflare Workers AI, GitHub Models, N
 
 - [prompt_pad.py](prompt_pad.py) — entry point, run with `streamlit run`
 - [prompt_pad/config.py](prompt_pad/config.py) — provider registry and default settings loaded from `.env`
+- [prompt_pad/env_settings.py](prompt_pad/env_settings.py) — `.env` loading, validation, and persistence
+- [prompt_pad/config_page.py](prompt_pad/config_page.py) — configuration-page UI
 - [prompt_pad/providers.py](prompt_pad/providers.py) — provider configuration checks and OpenAI client construction
 - [prompt_pad/chat.py](prompt_pad/chat.py) — chat request/response handling, streaming, and stats
 - [prompt_pad/app.py](prompt_pad/app.py) — Streamlit UI (sidebar, chat history, input handling)
+- [pages/2_Configuration.py](pages/2_Configuration.py) — Streamlit configuration-page entry point
