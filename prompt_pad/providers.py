@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------------------
+# Provider integration: checks configuration, discovers models, and builds clients.
+# -----------------------------------------------------------------------------
+
 import os
 
 import httpx
@@ -23,7 +27,12 @@ def fetch_openrouter_free_models() -> list[str]:
     resp = httpx.get("https://openrouter.ai/api/v1/models", timeout=15.0)
     resp.raise_for_status()
     data = resp.json().get("data", [])
-    return sorted(m["id"] for m in data if m.get("id", "").endswith(":free"))
+    free_models = sorted(
+        m["id"]
+        for m in data
+        if m.get("id", "").endswith(":free") and m["id"] != "openrouter/free"
+    )
+    return ["openrouter/free", *free_models]
 
 
 def get_client(provider_name: str) -> OpenAI:

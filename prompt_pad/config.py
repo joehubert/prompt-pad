@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------------------
+# Application configuration: loads environment settings and provider defaults.
+# -----------------------------------------------------------------------------
+
 import os
 
 from dotenv import load_dotenv

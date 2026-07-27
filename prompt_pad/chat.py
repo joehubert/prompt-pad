@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------------------
+# Chat execution: builds requests, handles streaming, and formats response stats.
+# -----------------------------------------------------------------------------
+
 import time
 from collections.abc import Callable
 from dataclasses import dataclass

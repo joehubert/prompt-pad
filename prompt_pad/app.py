@@ -1,3 +1,7 @@
+# -----------------------------------------------------------------------------
+# Streamlit UI: renders the sidebar, chat history, prompt input, and usage stats.
+# -----------------------------------------------------------------------------
+
 import time
 
 import streamlit as st
