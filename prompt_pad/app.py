@@ -32,6 +32,26 @@ def _init_session_state() -> None:
         st.session_state.stats = []
 
 
+def _refresh_openrouter_models(*, show_success: bool = False) -> bool:
+    """Fetch OpenRouter free models into session state. Returns True on success."""
+    with st.spinner("Fetching free models from OpenRouter..."):
+        try:
+            fetched = fetch_openrouter_free_models()
+        except Exception as exc:
+            st.error(f"Could not load models: {exc}")
+            return False
+
+    if not fetched:
+        st.warning("No free models found in the response.")
+        return False
+
+    st.session_state.openrouter_models = fetched
+    st.session_state.openrouter_refreshed_at = time.strftime("%H:%M:%S")
+    if show_success:
+        st.success(f"Loaded {len(fetched)} free models.")
+    return True
+
+
 def _render_sidebar() -> tuple[str, str, float, int, str, bool]:
     st.header("Provider")
 
@@ -44,11 +64,21 @@ def _render_sidebar() -> tuple[str, str, float, int, str, bool]:
         "Endpoint",
         list(PROVIDERS.keys()),
         format_func=label,
+        key="sidebar_provider",
     )
     cfg = PROVIDERS[provider]
 
     if "openrouter_models" not in st.session_state:
         st.session_state.openrouter_models = list(PROVIDERS["OpenRouter"]["models"])
+
+    previous_provider = st.session_state.get("_last_sidebar_provider")
+    switched_to_openrouter = (
+        provider == "OpenRouter" and previous_provider != "OpenRouter"
+    )
+    st.session_state._last_sidebar_provider = provider
+
+    if switched_to_openrouter:
+        _refresh_openrouter_models()
 
     model_options = (
         st.session_state.openrouter_models
@@ -58,28 +88,14 @@ def _render_sidebar() -> tuple[str, str, float, int, str, bool]:
 
     if provider == "OpenRouter":
         if st.button("Refresh free models", use_container_width=True):
-            with st.spinner("Fetching free models from OpenRouter..."):
-                try:
-                    fetched = fetch_openrouter_free_models()
-                except Exception as exc:
-                    st.error(f"Refresh failed: {exc}")
-                else:
-                    if fetched:
-                        st.session_state.openrouter_models = fetched
-                        model_options = fetched
-                        st.session_state.openrouter_refreshed_at = time.strftime(
-                            "%H:%M:%S"
-                        )
-                        st.success(f"Loaded {len(fetched)} free models.")
-                    else:
-                        st.warning("No free models found in the response.")
+            _refresh_openrouter_models(show_success=True)
         if st.session_state.get("openrouter_refreshed_at"):
             st.caption(
                 f"Last refreshed {st.session_state.openrouter_refreshed_at} "
                 f"· {len(st.session_state.openrouter_models)} free models"
             )
 
-    model = st.selectbox("Model", model_options)
+    model = st.selectbox("Model", model_options, key=f"model_{provider}")
     custom = st.text_input("...or type a model ID", placeholder="override")
     if custom.strip():
         model = custom.strip()

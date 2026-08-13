@@ -37,4 +37,14 @@ Thumbs.db
 
 # Environment variables
 .env
+.env.local
 .flaskenv
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
+.vercel
